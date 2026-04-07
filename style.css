@@ -46,15 +46,15 @@ body {
 }
 .social-link:hover { opacity: 1; transform: scale(1.05); }
 
-/* --- استایل جدید آیکون‌های شبکه اجتماعی در درباره ما --- */
+/* آیکون‌های شبکه اجتماعی در درباره ما */
 .social-icon {
-    color: #1f2937; /* مایل به سیاه در حالت لایت */
+    color: #1f2937;
     transition: all 0.3s ease;
     opacity: 0.8;
 }
 
 .dark .social-icon {
-    color: #f1f5f9; /* مایل به سفید در حالت دارک */
+    color: #f1f5f9;
 }
 
 .social-icon:hover, .social-icon:active {
@@ -62,7 +62,6 @@ body {
     transform: translateY(-5px);
     opacity: 1;
 }
-/* -------------------------------------------------- */
 
 /* منوی پایین */
 .bottom-nav {
@@ -100,7 +99,7 @@ body {
     color: var(--main-accent) !important;
 }
 
-/* پنل‌های پاپ‌آپ (اصلاح شده برای اسکرول بهتر) */
+/* پنل‌های پاپ‌آپ (بهینه شده برای اسکرول) */
 .panel-popup {
     position: fixed;
     bottom: 110px;
@@ -118,10 +117,7 @@ body {
     z-index: 2001;
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--main-text);
-    
-    /* رفع مشکل اسکرول صفحه زیرین */
     touch-action: pan-y; 
-    overflow: hidden;
 }
 
 .panel-popup.show {
@@ -130,7 +126,7 @@ body {
     pointer-events: auto;
 }
 
-/* بنتو گرید دسته‌ها (اصلاح شده برای اسکرول در تمام فضا) */
+/* گرید دسته‌ها */
 .category-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -139,9 +135,10 @@ body {
     overflow-y: auto;
     padding: 5px;
     pointer-events: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* شخصی‌سازی اسکرول‌بار داخلی */
+/* اسکرول‌بار داخلی */
 .category-grid::-webkit-scrollbar { width: 4px; }
 .category-grid::-webkit-scrollbar-thumb { background: var(--main-accent); border-radius: 10px; }
 
@@ -164,18 +161,17 @@ body {
     box-shadow: 0 8px 20px rgba(167, 139, 250, 0.3);
 }
 
-/* نقاط انتخاب رنگ */
-.dot {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: 0.3s;
-    border: 2px solid transparent;
+/* فیلد جستجو */
+#searchInput::placeholder {
+    color: var(--main-text);
+    opacity: 0.3;
 }
-.dot:hover { transform: scale(1.1); border-color: white; }
 
-/* تگ کارت‌ها */
+#searchInput:focus {
+    box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.15);
+}
+
+/* تگ و تاریخ */
 .tag {
     background: var(--main-accent);
     color: white;
@@ -185,18 +181,23 @@ body {
     font-weight: 900;
 }
 
-/* اورلی درباره ما */
-#about-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(15px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 3000;
+.date-text {
+    font-family: 'Vazirmatn', sans-serif;
+    letter-spacing: -0.5px;
 }
 
+/* نقاط انتخاب رنگ */
+.dot {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 3px solid transparent;
+}
+.dot:hover { transform: scale(1.1); }
+
+/* اورلی درباره ما */
 #about-overlay.show { display: flex; }
 
 .about-content {
@@ -212,7 +213,7 @@ body {
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-/* استایل پیام کپی شد (Toast) */
+/* پیام کپی شد (Toast) */
 .toast-msg {
     position: fixed;
     bottom: 120px;

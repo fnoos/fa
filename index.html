@@ -11,7 +11,7 @@
 </head>
 <body class="pb-40">
 
-    <header class="max-w-xl mx-auto px-8 pt-16 mb-12 relative">
+    <header class="max-w-xl mx-auto px-8 pt-16 mb-10 relative">
         <div class="text-center">
             <h1 class="font-rubik text-7xl font-black mb-3 tracking-tighter" style="color: var(--main-accent)">فانوس...</h1>
             <p class="text-xl opacity-60 font-medium leading-relaxed">جایی برای درنگ و آگاهی.</p>
@@ -23,7 +23,14 @@
         </button>
     </header>
 
-    <main id="content-area" class="max-w-xl mx-auto px-6 space-y-8"></main>
+    <main class="max-w-xl mx-auto px-6">
+        <div class="mb-8" id="search-area">
+            <input type="text" id="searchInput" oninput="searchPosts()" placeholder="جستجو در کلمات، موضوعات یا تاریخ..." 
+                class="w-full p-5 rounded-[25px] bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 backdrop-blur-md outline-none focus:border-[var(--main-accent)] transition-all text-sm font-medium shadow-sm">
+        </div>
+
+        <div id="content-area" class="space-y-8"></div>
+    </main>
 
     <div id="category-panel" class="panel-popup">
         <h3 class="text-center font-bold mb-5 opacity-40 text-sm">انتخاب موضوع</h3>
