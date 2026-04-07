@@ -100,12 +100,28 @@ function share(text) {
             text: shareMessage
         }).catch(console.error);
     } else {
-        navigator.clipboard.writeText(shareMessage);
-        alert("متن به همراه لینک‌ها در حافظه کپی شد.");
+        navigator.clipboard.writeText(shareMessage).then(() => {
+            showToast("لینک و متن کپی شد!");
+        });
     }
 }
 
-window.onload = fetchPosts;
+// تابع کمکی برای نمایش پیام کپی
+function showToast(message) {
+    // ایجاد المان پیام
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-32 left-50 -translate-x-1/2 bg-black/80 text-white px-6 py-3 rounded-full text-sm font-bold z-[5000] backdrop-blur-md animate-bounce';
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.innerText = message;
+    
+    document.body.appendChild(toast);
+
+    // حذف پیام بعد از ۲ ثانیه
+    setTimeout(() => {
+        toast.remove();
+    }, 2000);
+}
 
 // بستن پنل‌ها با کلیک روی فضای خالی صفحه
 window.addEventListener('click', function(e) {
@@ -122,3 +138,5 @@ window.addEventListener('click', function(e) {
         colorPanel.classList.remove('show');
     }
 });
+
+window.onload = fetchPosts;
