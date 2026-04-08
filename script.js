@@ -164,14 +164,32 @@ function setTheme(bg, accent, text) {
     closePanels();
 }
 
+// -------------------- ✅ FIXED SHARE ONLY --------------------
 async function share(event, text) {
     const shareMessage = `${text}\n\n✨ فانوس`;
+
+    // اول Share واقعی موبایل
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                text: shareMessage
+            });
+            showFeedback(event);
+            return;
+        } catch (err) {
+            // اگر cancel شد میره کپی
+        }
+    }
+
+    // fallback کپی
     try {
         await navigator.clipboard.writeText(shareMessage);
     } catch (err) {}
+
     showFeedback(event);
 }
 
+// -------------------- FEEDBACK --------------------
 function showFeedback(event) {
     const feedback = document.createElement('div');
     feedback.className = 'copy-feedback';
