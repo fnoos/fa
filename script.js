@@ -67,7 +67,7 @@ function filterCat(btn, tag) {
     document.getElementById('searchInput').value = '';
     const filtered = tag === 'همه' ? posts : posts.filter(p => p.tag === tag);
     renderPosts(filtered);
-    closePanels();
+    closePanels(); // حالا این تابع هوشمندانه آیکون درست را روشن نگه می‌دارد
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -75,14 +75,18 @@ function handleNav(action) {
     const targetPanel = action === 'categories' ? 'category-panel' : (action === 'colors' ? 'color-panel' : null);
     const isAlreadyOpen = targetPanel ? document.getElementById(targetPanel).classList.contains('show') : false;
 
-    closePanels();
-
     if (action === 'theme') {
         toggleDark();
         return;
     }
-    
-    if (!isAlreadyOpen) {
+
+    if (isAlreadyOpen) {
+        closePanels();
+    } else {
+        // بستن بقیه پنل‌ها قبل از باز کردن پنل جدید
+        document.querySelectorAll('.panel-popup').forEach(p => p.classList.remove('show'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+
         if (action === 'home') {
             document.getElementById('nav-home').classList.add('active');
             currentFilter = 'همه';
@@ -103,9 +107,17 @@ function handleNav(action) {
 
 function closePanels() {
     document.querySelectorAll('.panel-popup').forEach(p => p.classList.remove('show'));
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    document.getElementById('nav-home').classList.add('active');
     document.body.style.overflow = ''; 
+    
+    // پاک کردن وضعیت فعال همه آیکون‌ها
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    
+    // اگر فیلتری فعال است آیکون دسته‌ها روشن بماند، در غیر این صورت خانه
+    if (currentFilter !== 'همه') {
+        document.getElementById('nav-cats').classList.add('active');
+    } else {
+        document.getElementById('nav-home').classList.add('active');
+    }
 }
 
 function toggleDark() {
@@ -135,7 +147,6 @@ function setTheme(bg, accent, text) {
 function share(event, text) {
     const shareMessage = `${text}\n\n✨ فانوس\n---------------------------\nهمراه ما باشید در:\nاینســــتا: instagram.com/fanoosarea\nتلگــــرام: t.me/fanoosarea\nتیک تاک: tiktok.com/@fanoosarea\nســــایت: fa.fanos.workers.dev`;
     
-    // در موبایل منوی اشتراک‌گذاری باز می‌شود، در غیر این صورت کپی می‌شود
     if (navigator.share && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         navigator.share({ text: shareMessage }).catch(() => copyToClipboard(event, shareMessage));
     } else {
@@ -145,7 +156,6 @@ function share(event, text) {
 
 function copyToClipboard(event, text) {
     navigator.clipboard.writeText(text).then(() => {
-        // ایجاد پیام شناور در محل دقیق کلیک کاربر
         const feedback = document.createElement('div');
         feedback.className = 'copy-feedback';
         feedback.innerText = 'لینک و متن کپی شد';
@@ -155,7 +165,6 @@ function copyToClipboard(event, text) {
         
         document.body.appendChild(feedback);
         
-        // محو شدن و حذف پیام بعد از یک لحظه
         setTimeout(() => {
             feedback.classList.add('fade-out');
             setTimeout(() => feedback.remove(), 400);
