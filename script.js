@@ -140,18 +140,35 @@ function setTheme(bg, accent, text) {
     closePanels();
 }
 
+// --- بخش اصلاح شده برای حل مشکل آیفون و لرزش اندروید ---
 function share(event, text) {
     const shareMessage = `${text}\n\n✨ فانوس\n---------------------------\nهمراه ما باشید در:\nاینســــتا: instagram.com/fanoosarea\nتلگــــرام: t.me/fanoosarea\nتیک تاک: tiktok.com/@fanoosarea\nســــایت: fa.fanos.workers.dev`;
     
-    // ۱. نمایش پیام فیدبک در محل کلیک
-    showFeedback(event);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    // ۲. کپی متن در کلیپ‌بورد
+    if (navigator.share && isIOS) {
+        // در آیفون فقط از منوی سیستم استفاده می‌کنیم (بدون کپی دستی برای جلوگیری از تداخل)
+        navigator.share({ text: shareMessage }).catch(() => {});
+    } else {
+        // در اندروید و پی‌سی ابتدا کپی می‌کنیم و پیام می‌دهیم
+        showFeedback(event);
+        copyToClipboardManual(shareMessage);
+
+        // در اندروید، با کمی تاخیر منو را باز می‌کنیم تا لرزش حذف شود
+        if (navigator.share) {
+            setTimeout(() => {
+                navigator.share({ text: shareMessage }).catch(() => {});
+            }, 300);
+        }
+    }
+}
+
+function copyToClipboardManual(text) {
     if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(shareMessage);
+        navigator.clipboard.writeText(text);
     } else {
         const textArea = document.createElement("textarea");
-        textArea.value = shareMessage;
+        textArea.value = text;
         textArea.style.position = "fixed";
         textArea.style.left = "-9999px";
         textArea.style.top = "0";
@@ -161,13 +178,6 @@ function share(event, text) {
         document.execCommand('copy');
         document.body.removeChild(textArea);
     }
-
-    // ۳. باز کردن منوی اشتراک سیستم در صورت امکان
-    if (navigator.share && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        setTimeout(() => {
-            navigator.share({ text: shareMessage }).catch(() => {});
-        }, 150); 
-    }
 }
 
 function showFeedback(event) {
@@ -175,19 +185,11 @@ function showFeedback(event) {
     feedback.className = 'copy-feedback';
     feedback.innerText = 'لینک و متن کپی شد';
     
-    // شناسایی مختصات کلیک یا لمس
-    let x, y;
-    if (event.type.startsWith('touch')) {
-        x = event.touches[0].clientX;
-        y = event.touches[0].clientY;
-    } else {
-        x = event.clientX;
-        y = event.clientY;
-    }
+    let x = event.clientX || (event.touches ? event.touches[0].clientX : 0);
+    let y = event.clientY || (event.touches ? event.touches[0].clientY : 0);
     
     feedback.style.left = `${x}px`;
     feedback.style.top = `${y - 35}px`;
-    
     document.body.appendChild(feedback);
     
     setTimeout(() => {
