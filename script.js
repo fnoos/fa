@@ -168,27 +168,30 @@ function setTheme(bg, accent, text) {
 async function share(event, text) {
     const shareMessage = `${text}\n\n✨ فانوس`;
 
-    // اول Share واقعی موبایل
-    if (navigator.share) {
+    // فقط اندروید و موبایل
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (navigator.share && isMobile) {
         try {
             await navigator.share({
-                text: shareMessage
+                title: "فانوس",
+                text: shareMessage,
+                url: window.location.href
             });
             showFeedback(event);
             return;
         } catch (err) {
-            // اگر cancel شد میره کپی
+            // اگر share fail شد → میره کپی
         }
     }
 
-    // fallback کپی
+    // fallback
     try {
         await navigator.clipboard.writeText(shareMessage);
     } catch (err) {}
 
     showFeedback(event);
 }
-
 // -------------------- FEEDBACK --------------------
 function showFeedback(event) {
     const feedback = document.createElement('div');
