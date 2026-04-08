@@ -72,7 +72,7 @@ function filterCat(btn, tag) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// -------------------- 🔥 FIXED SCROLL LOCK --------------------
+// -------------------- SCROLL LOCK --------------------
 function lockScroll() {
     scrollY = window.scrollY;
 
@@ -138,7 +138,7 @@ function closePanels() {
     }
 }
 
-// -------------------- ABOUT (FIXED) --------------------
+// -------------------- ABOUT --------------------
 function openAbout() {
     document.getElementById('about-overlay').style.display = 'flex';
     lockScroll();
@@ -149,7 +149,7 @@ function closeAbout() {
     unlockScroll();
 }
 
-// -------------------- باقی کد بدون تغییر --------------------
+// -------------------- OTHER --------------------
 function toggleDark() {
     document.body.classList.toggle('dark');
     const isDark = document.body.classList.contains('dark');
@@ -182,11 +182,27 @@ function showFeedback(event) {
     setTimeout(() => feedback.remove(), 1000);
 }
 
+// -------------------- ✅ ONLY FIX (NO OTHER CHANGE) --------------------
 window.addEventListener('click', function(e) {
     const aboutOverlay = document.getElementById('about-overlay');
+    const panels = document.querySelectorAll('.panel-popup');
 
     if (e.target === aboutOverlay) {
         closeAbout();
+        return;
+    }
+
+    let clickedInsidePanel = false;
+    panels.forEach(p => {
+        if (p.contains(e.target)) clickedInsidePanel = true;
+    });
+
+    const clickedNav = e.target.closest('.nav-item');
+
+    const anyPanelOpen = document.querySelector('.panel-popup.show');
+
+    if (anyPanelOpen && !clickedInsidePanel && !clickedNav) {
+        closePanels();
     }
 });
 
