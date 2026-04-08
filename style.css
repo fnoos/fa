@@ -183,14 +183,14 @@ body.overflow-hidden {
     color: white;
     padding: 5px 15px;
     border-radius: 12px;
-    font-size: 14px; /* اصلاح شده */
+    font-size: 14px;
     font-weight: 900;
 }
 
 .date-text {
     font-family: 'Vazirmatn', sans-serif;
     letter-spacing: -0.5px;
-    font-size: 13px; /* اصلاح شده */
+    font-size: 13px;
 }
 
 /* نقاط انتخاب رنگ */
@@ -263,7 +263,7 @@ body.overflow-hidden {
     100% { opacity: 1; transform: translate(-50%, -50%); }
 }
 
-/* استایل قدیمی توست (غیرفعال اما برای احتیاط باقی مانده) */
+/* استایل قدیمی توست */
 .toast-msg {
     position: fixed;
     bottom: 120px;
@@ -287,4 +287,10 @@ body.overflow-hidden {
 .toast-msg.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+}
+
+/* ✅ فقط این بخش اضافه شد */
+html.no-scroll {
+    overflow: hidden;
+    height: 100%;
 }

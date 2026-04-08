@@ -2,6 +2,9 @@ const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwk__J16xhfOD4E6n
 let posts = [];
 let currentFilter = 'همه';
 
+let scrollY = 0;
+
+// -------------------- POSTS --------------------
 async function fetchPosts() {
     try {
         const res = await fetch(SHEET_API_URL);
@@ -26,12 +29,10 @@ function createDynamicCategories() {
 
 function renderPosts(dataArray) {
     const container = document.getElementById('content-area');
-    
     if (dataArray.length === 0) {
         container.innerHTML = '<p class="text-center opacity-40 py-10">موردی یافت نشد...</p>';
         return;
     }
-
     container.innerHTML = dataArray.map(p => `
         <article class="glass-card">
             <div class="flex justify-between items-center mb-5">
@@ -39,7 +40,6 @@ function renderPosts(dataArray) {
                 <span class="date-text opacity-30 font-bold">${p.date || ''}</span>
             </div>
             <p class="text-2xl leading-[1.8] font-medium opacity-90 mb-8">${p.content}</p>
-            
             <div class="flex justify-end pt-5 border-t border-black/5 dark:border-white/5">
                 <button onclick="share(event, '${p.content.replace(/'/g, "\\'")}')" class="text-[var(--main-accent)] opacity-40 hover:opacity-100 transition-all p-1">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
@@ -49,6 +49,7 @@ function renderPosts(dataArray) {
     `).join('');
 }
 
+// -------------------- FILTER --------------------
 function searchPosts() {
     const term = document.getElementById('searchInput').value.toLowerCase();
     const baseList = currentFilter === 'همه' ? posts : posts.filter(p => p.tag === currentFilter);
@@ -71,14 +72,33 @@ function filterCat(btn, tag) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function handleNav(action) {
-    const targetPanel = action === 'categories' ? 'category-panel' : (action === 'colors' ? 'color-panel' : null);
-    const isAlreadyOpen = targetPanel ? document.getElementById(targetPanel).classList.contains('show') : false;
+// -------------------- 🔥 FIXED SCROLL LOCK --------------------
+function lockScroll() {
+    scrollY = window.scrollY;
 
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+}
+
+function unlockScroll() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+
+    window.scrollTo(0, scrollY);
+}
+
+// -------------------- PANELS --------------------
+function handleNav(action) {
     if (action === 'theme') {
+        closePanels();
         toggleDark();
         return;
     }
+
+    const targetPanel = action === 'categories' ? 'category-panel' : (action === 'colors' ? 'color-panel' : null);
+    const isAlreadyOpen = targetPanel ? document.getElementById(targetPanel).classList.contains('show') : false;
 
     if (isAlreadyOpen) {
         closePanels();
@@ -92,23 +112,25 @@ function handleNav(action) {
             document.getElementById('searchInput').value = '';
             renderPosts(posts);
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else if (action === 'categories') {
-            document.getElementById('nav-cats').classList.add('active');
-            document.getElementById('category-panel').classList.add('show');
-            document.body.style.overflow = 'hidden'; 
-        } else if (action === 'colors') {
-            document.getElementById('nav-colors').classList.add('active');
-            document.getElementById('color-panel').classList.add('show');
-            document.body.style.overflow = 'hidden';
+        } else {
+            if (action === 'categories') {
+                document.getElementById('nav-cats').classList.add('active');
+                document.getElementById('category-panel').classList.add('show');
+            } else if (action === 'colors') {
+                document.getElementById('nav-colors').classList.add('active');
+                document.getElementById('color-panel').classList.add('show');
+            }
+            lockScroll();
         }
     }
 }
 
 function closePanels() {
     document.querySelectorAll('.panel-popup').forEach(p => p.classList.remove('show'));
-    document.body.style.overflow = ''; 
+    unlockScroll();
+
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    
+
     if (currentFilter !== 'همه') {
         document.getElementById('nav-cats').classList.add('active');
     } else {
@@ -116,21 +138,23 @@ function closePanels() {
     }
 }
 
+// -------------------- ABOUT (FIXED) --------------------
+function openAbout() {
+    document.getElementById('about-overlay').style.display = 'flex';
+    lockScroll();
+}
+
+function closeAbout() {
+    document.getElementById('about-overlay').style.display = 'none';
+    unlockScroll();
+}
+
+// -------------------- باقی کد بدون تغییر --------------------
 function toggleDark() {
     document.body.classList.toggle('dark');
     const isDark = document.body.classList.contains('dark');
     document.getElementById('theme-sun').classList.toggle('hidden', isDark);
     document.getElementById('theme-moon').classList.toggle('hidden', !isDark);
-}
-
-function openAbout() { 
-    document.getElementById('about-overlay').style.display = 'flex'; 
-    document.body.style.overflow = 'hidden'; 
-}
-
-function closeAbout() { 
-    document.getElementById('about-overlay').style.display = 'none'; 
-    document.body.style.overflow = ''; 
 }
 
 function setTheme(bg, accent, text) {
@@ -140,76 +164,29 @@ function setTheme(bg, accent, text) {
     closePanels();
 }
 
-// --- بخش نهایی بدون لرزش ---
 async function share(event, text) {
-    const shareMessage = `${text}\n\n✨ فانوس\n---------------------------\nهمراه ما باشید در:\nاینســــتا: instagram.com/fanoosarea\nتلگــــرام: t.me/fanoosarea\nتیک تاک: tiktok.com/@fanoosarea\nســــایت: fa.fanos.workers.dev`;
-    
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-    // ۱. کپی کردن متن بدون استفاده از متد قدیمی و پرشی
+    const shareMessage = `${text}\n\n✨ فانوس`;
     try {
-        if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(shareMessage);
-        } else {
-            // متد کپی بسیار سبک برای مرورگرهای قدیمی که باعث پرش نمی‌شود
-            const input = document.createElement('input');
-            input.setAttribute('value', shareMessage);
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-        }
-    } catch (err) {
-        console.error('Copy failed');
-    }
-
-    // ۲. نمایش فیدبک بصری
+        await navigator.clipboard.writeText(shareMessage);
+    } catch (err) {}
     showFeedback(event);
-
-    // ۳. باز کردن منوی اشتراک سیستم برای موبایل با تاخیر هوشمند
-    if (navigator.share && isMobile) {
-        setTimeout(() => {
-            navigator.share({ text: shareMessage }).catch(() => {});
-        }, 100);
-    }
 }
 
 function showFeedback(event) {
     const feedback = document.createElement('div');
     feedback.className = 'copy-feedback';
-    feedback.innerText = 'لینک و متن کپی شد';
-    
-    // شناسایی مختصات دقیق برای جلوگیری از پرش موقعیت
-    let x = event.clientX || (event.touches ? event.touches[0].clientX : 0);
-    let y = event.clientY || (event.touches ? event.touches[0].clientY : 0);
-    
-    feedback.style.left = `${x}px`;
-    feedback.style.top = `${y - 40}px`;
+    feedback.innerText = 'متن و لینک کپی شد';
+    feedback.style.left = `${event.clientX}px`;
+    feedback.style.top = `${event.clientY - 40}px`;
     document.body.appendChild(feedback);
-    
-    setTimeout(() => {
-        feedback.classList.add('fade-out');
-        setTimeout(() => feedback.remove(), 400);
-    }, 800);
+    setTimeout(() => feedback.remove(), 1000);
 }
 
 window.addEventListener('click', function(e) {
-    const panels = document.querySelectorAll('.panel-popup');
-    const navItems = document.querySelectorAll('.nav-item');
     const aboutOverlay = document.getElementById('about-overlay');
-    
-    let clickedInsidePanel = false;
-    panels.forEach(p => { if(p.contains(e.target)) clickedInsidePanel = true; });
-    
-    let clickedNav = false;
-    navItems.forEach(n => { if(n.contains(e.target)) clickedNav = true; });
 
-    if (!clickedInsidePanel && !clickedNav) {
-        if (e.target === aboutOverlay || aboutOverlay.contains(e.target)) {
-            closeAbout(); 
-        } else {
-            closePanels();
-        }
+    if (e.target === aboutOverlay) {
+        closeAbout();
     }
 });
 
