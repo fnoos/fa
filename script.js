@@ -41,7 +41,7 @@ function renderPosts(dataArray) {
             <p class="text-2xl leading-[1.8] font-medium opacity-90 mb-8">${p.content}</p>
             
             <div class="flex justify-end pt-5 border-t border-black/5 dark:border-white/5">
-                <button onclick="share('${p.content.replace(/'/g, "\\'")}')" class="text-[var(--main-accent)] opacity-40 hover:opacity-100 transition-all p-1">
+                <button onclick="share(event, '${p.content.replace(/'/g, "\\'")}')" class="text-[var(--main-accent)] opacity-40 hover:opacity-100 transition-all p-1">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                 </button>
             </div>
@@ -132,17 +132,35 @@ function setTheme(bg, accent, text) {
     closePanels();
 }
 
-function share(text) {
+function share(event, text) {
     const shareMessage = `${text}\n\n✨ فانوس\n---------------------------\nهمراه ما باشید در:\nاینســــتا: instagram.com/fanoosarea\nتلگــــرام: t.me/fanoosarea\nتیک تاک: tiktok.com/@fanoosarea\nســــایت: fa.fanos.workers.dev`;
-    if (navigator.share) {
-        navigator.share({ text: shareMessage }).catch(() => copyToClipboard(shareMessage));
+    
+    // در موبایل منوی اشتراک‌گذاری باز می‌شود، در غیر این صورت کپی می‌شود
+    if (navigator.share && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        navigator.share({ text: shareMessage }).catch(() => copyToClipboard(event, shareMessage));
     } else {
-        copyToClipboard(shareMessage);
+        copyToClipboard(event, shareMessage);
     }
 }
 
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text);
+function copyToClipboard(event, text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // ایجاد پیام شناور در محل دقیق کلیک کاربر
+        const feedback = document.createElement('div');
+        feedback.className = 'copy-feedback';
+        feedback.innerText = 'کپی شد';
+        
+        feedback.style.left = `${event.clientX}px`;
+        feedback.style.top = `${event.clientY - 30}px`;
+        
+        document.body.appendChild(feedback);
+        
+        // محو شدن و حذف پیام بعد از یک لحظه
+        setTimeout(() => {
+            feedback.classList.add('fade-out');
+            setTimeout(() => feedback.remove(), 400);
+        }, 800);
+    });
 }
 
 window.addEventListener('click', function(e) {
@@ -156,10 +174,9 @@ window.addEventListener('click', function(e) {
     let clickedNav = false;
     navItems.forEach(n => { if(n.contains(e.target)) clickedNav = true; });
 
-    // اصلاح منطق بستن پنل‌ها با کلیک روی صفحه
     if (!clickedInsidePanel && !clickedNav) {
         if (e.target === aboutOverlay || aboutOverlay.contains(e.target)) {
-            closeAbout();
+            closeAbout(); 
         } else {
             closePanels();
         }

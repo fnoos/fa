@@ -104,7 +104,7 @@ body.overflow-hidden {
     color: var(--main-accent) !important;
 }
 
-/* پنل‌های پاپ‌آپ (حل مشکل کلیک ناخواسته با visibility) */
+/* پنل‌های پاپ‌آپ */
 .panel-popup {
     position: fixed;
     bottom: 110px;
@@ -117,7 +117,7 @@ body.overflow-hidden {
     border-radius: 32px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.2);
     opacity: 0;
-    visibility: hidden; /* مخفی سازی فیزیکی برای جلوگیری از تداخل کلیک */
+    visibility: hidden;
     pointer-events: none;
     transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 2001;
@@ -128,7 +128,7 @@ body.overflow-hidden {
 
 .panel-popup.show {
     opacity: 1;
-    visibility: visible; /* نمایش فیزیکی هنگام باز شدن */
+    visibility: visible;
     transform: translateX(-50%) translateY(0);
     pointer-events: auto;
 }
@@ -145,7 +145,6 @@ body.overflow-hidden {
     -webkit-overflow-scrolling: touch;
 }
 
-/* اسکرول‌بار داخلی */
 .category-grid::-webkit-scrollbar { width: 4px; }
 .category-grid::-webkit-scrollbar-thumb { background: var(--main-accent); border-radius: 10px; }
 
@@ -184,14 +183,14 @@ body.overflow-hidden {
     color: white;
     padding: 5px 15px;
     border-radius: 12px;
-    font-size: 15px;
+    font-size: 14px; /* اصلاح شده */
     font-weight: 900;
 }
 
 .date-text {
     font-family: 'Vazirmatn', sans-serif;
     letter-spacing: -0.5px;
-    font-size: 13px; /* این خط را اضافه کن یا به مقدار دلخواه تغییر بده */
+    font-size: 13px; /* اصلاح شده */
 }
 
 /* نقاط انتخاب رنگ */
@@ -238,7 +237,33 @@ body.overflow-hidden {
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-/* پیام کپی شد (Toast) */
+/* استایل جدید پیام کپی شد در محل کلیک */
+.copy-feedback {
+    position: fixed;
+    transform: translate(-50%, -50%);
+    background: var(--main-accent);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 9999;
+    pointer-events: none;
+    animation: popUp 0.3s ease-out;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.copy-feedback.fade-out {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+@keyframes popUp {
+    0% { opacity: 0; transform: translate(-50%, 0); }
+    100% { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* استایل قدیمی توست (غیرفعال اما برای احتیاط باقی مانده) */
 .toast-msg {
     position: fixed;
     bottom: 120px;
