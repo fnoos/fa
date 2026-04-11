@@ -5,7 +5,7 @@
     --nav-bg: rgba(255, 255, 255, 0.9);
     --panel-bg: rgba(255, 255, 255, 0.95);
     /* متغیر جدید برای کنترل سایز فونت */
-    --user-font-size: 20px;
+    --user-font-size: 22px;
 }
 
 /* حالت تاریک */
@@ -83,7 +83,8 @@ body.overflow-hidden {
     border-radius: 30px;
     display: flex;
     justify-content: space-around;
-    padding: 15px;
+    align-items: center; /* اضافه شده برای تراز شدن دایره جدید */
+    padding: 15px 10px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.1);
     z-index: 2000;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -99,11 +100,35 @@ body.overflow-hidden {
     color: var(--main-text);
     opacity: 0.4;
     transition: 0.3s;
+    flex: 1; /* برای توزیع مساوی فضا */
 }
 
 .nav-item.active {
     opacity: 1;
     color: var(--main-accent) !important;
+}
+
+/* ✅ استایل اختصاصی دکمه فونت داخل منو */
+.special-font-btn {
+    opacity: 1 !important;
+}
+
+.font-icon-circle {
+    width: 32px;
+    height: 32px;
+    background: var(--main-accent); /* رنگ انتخابی کاربر */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden; /* برای جلوگیری از بیرون زدگی عکس */
+}
+
+/* تنظیم استایل عکس داخل دایره */
+.font-icon-circle img {
+    display: block;
+    transition: 0.3s;
 }
 
 /* پنل‌های پاپ‌آپ */
@@ -302,7 +327,7 @@ html.no-scroll {
     text-justify: inter-word;
     font-size: var(--user-font-size);
     line-height: 1.8;
-    white-space: pre-line; /* ✅ اصلاح برای نمایش اینترها و پاراگراف‌ها */
+    white-space: pre-line; 
 }
 
 /* استایل هشتگ‌ها در پایین سمت راست کارت */
@@ -326,19 +351,7 @@ html.no-scroll {
     opacity: 1;
 }
 
-/* دکمه شناور فونت (استایل تکمیلی برای ترازبندی حرف A) */
+/* حذف دکمه شناور قدیمی */
 .font-ctrl-anchor {
-    position: fixed;
-    right: 20px;
-    bottom: 110px;
-    z-index: 2002;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    font-size: 20px;
-    cursor: pointer;
-    border-radius: 50%;
+    display: none;
 }

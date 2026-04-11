@@ -3,17 +3,20 @@ let posts = [];
 let currentFilter = 'همه';
 let scrollY = 0;
 
-// ✅ ۱. منطق چرخش فونت (دکمه A)
+// ✅ ۱. منطق چرخش فونت (هماهنگ با دایره رنگی جدید)
 let fontState = 0; 
 function rotateFontSize() {
-    const sizes = ['22px', '26px', '30px'];
+    closePanels(); // 👈 این خط اضافه شد تا موقع تغییر سایز، بقیه پنل‌ها بسته شوند
+    
+    const sizes = ['18px', '21px', '24px', '27px', '30px'];
     fontState = (fontState + 1) % sizes.length;
     document.documentElement.style.setProperty('--user-font-size', sizes[fontState]);
     
-    const btn = document.querySelector('.font-ctrl-anchor');
-    if (btn) {
-        btn.style.transform = 'scale(1.2)';
-        setTimeout(() => btn.style.transform = 'scale(1)', 200);
+    // ایجاد افکت ضربان روی دایره رنگی
+    const fontCircle = document.querySelector('.font-icon-circle');
+    if (fontCircle) {
+        fontCircle.style.transform = 'scale(1.2)';
+        setTimeout(() => fontCircle.style.transform = 'scale(1)', 200);
     }
 }
 
@@ -54,10 +57,9 @@ function renderPosts(dataArray) {
             <span class="sub-tag" onclick="event.stopPropagation(); filterByHashtag('${t.trim()}')">#${t.trim()}</span>
         `).join('') : '';
 
-        // ✅ حل مشکل پاراگراف‌ها در اشتراک‌گذاری
         const safeContent = p.content
-            .replace(/'/g, "\\'")     // خنثی کردن کوتیشن
-            .replace(/\n/g, "\\n")    // خنثی کردن خط جدید
+            .replace(/'/g, "\\'")     
+            .replace(/\n/g, "\\n")    
             .replace(/\r/g, "\\r");
 
         return `
@@ -196,20 +198,10 @@ function setTheme(bg, accent, text) {
     closePanels();
 }
 
-// ✅ اصلاح نمایش کپی در PC و موبایل
+// -------------------- SHARE --------------------
 async function share(event, text) {
-    const shareMessage = `${text}
-    
- 
-✨ فانوس
----------------------------
-همراه ما باشید در:
-اینســــتا: instagram.com/fanoosarea
-تلگــــرام: t.me/fanoosarea
-تیک تاک: tiktok.com/@fanoosarea
-ســــایت: fa.fanos.workers.dev`;
+    const shareMessage = `${text}\n\n✨ فانوس\n---------------------------\nاینستا: instagram.com/fanoosarea\nتلگرام: t.me/fanoosarea\nسایت: fa.fanos.workers.dev`;
 
-    // اول متن را کپی کن (برای PC حیاتی است)
     try {
         await navigator.clipboard.writeText(shareMessage);
     } catch (err) {}
@@ -217,10 +209,7 @@ async function share(event, text) {
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (navigator.share && isMobile) {
         try {
-            await navigator.share({
-                title: "فانوس",
-                text: shareMessage,
-            });
+            await navigator.share({ title: "فانوس", text: shareMessage });
         } catch (err) {}
     }
     showFeedback(event);
@@ -231,7 +220,6 @@ function showFeedback(event) {
     feedback.className = 'copy-feedback';
     feedback.innerText = 'متن و لینک کپی شد';
     
-    // اگر مختصات معتبر بود در محل کلیک، وگرنه وسط صفحه
     if (event && event.clientX && event.clientY) {
         feedback.style.left = `${event.clientX}px`;
         feedback.style.top = `${event.clientY - 40}px`;
@@ -241,29 +229,30 @@ function showFeedback(event) {
     }
     
     document.body.appendChild(feedback);
-    setTimeout(() => feedback.remove(), 1000);
+    setTimeout(() => {
+        feedback.classList.add('fade-out');
+        setTimeout(() => feedback.remove(), 400);
+    }, 1000);
 }
 
 // -------------------- CLICK LISTENER --------------------
 window.addEventListener('click', function(e) {
     const aboutOverlay = document.getElementById('about-overlay');
-    const panels = document.querySelectorAll('.panel-popup');
-
     if (e.target === aboutOverlay) {
         closeAbout();
         return;
     }
 
     let clickedInsidePanel = false;
-    panels.forEach(p => {
+    document.querySelectorAll('.panel-popup').forEach(p => {
         if (p.contains(e.target)) clickedInsidePanel = true;
     });
 
-    const clickedNav = e.target.closest('.nav-item');
-    const clickedFontBtn = e.target.closest('.font-ctrl-anchor');
-    const anyPanelOpen = document.querySelector('.panel-popup.show');
+    const isNav = e.target.closest('.nav-item');
+    const isFont = e.target.closest('.special-font-btn'); 
+    const isOpen = document.querySelector('.panel-popup.show');
 
-    if (anyPanelOpen && !clickedInsidePanel && !clickedNav && !clickedFontBtn) {
+    if (isOpen && !clickedInsidePanel && !isNav && !isFont) {
         closePanels();
     }
 });
