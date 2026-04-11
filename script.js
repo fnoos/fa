@@ -1,8 +1,19 @@
 const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwk__J16xhfOD4E6nJqyM7Z2AjqQzwUCSx-iPsFt1eB0JZH6pl7J8HumA2pNggDkz1e/exec"; 
 let posts = [];
 let currentFilter = 'همه';
-
 let scrollY = 0;
+
+// ✅ ۱. منطق چرخش فونت (دکمه A)
+let fontState = 0; 
+function rotateFontSize() {
+    const sizes = ['22px', '26px', '30px'];
+    fontState = (fontState + 1) % sizes.length;
+    document.documentElement.style.setProperty('--user-font-size', sizes[fontState]);
+    
+    const btn = document.querySelector('.font-ctrl-anchor');
+    btn.style.transform = 'scale(1.2)';
+    setTimeout(() => btn.style.transform = 'scale(1)', 200);
+}
 
 // -------------------- POSTS --------------------
 async function fetchPosts() {
@@ -17,9 +28,10 @@ async function fetchPosts() {
     }
 }
 
+// ✅ اصلاح هماهنگ با ستون category
 function createDynamicCategories() {
     const container = document.getElementById('dynamic-cats');
-    const tags = ['همه', ...new Set(posts.map(p => p.tag))];
+    const tags = ['همه', ...new Set(posts.map(p => p.category).filter(Boolean))];
     container.innerHTML = tags.map(tag => `
         <div class="cat-btn ${tag === 'همه' ? 'active' : ''}" onclick="filterCat(this, '${tag}')">
             ${tag}
@@ -33,29 +45,49 @@ function renderPosts(dataArray) {
         container.innerHTML = '<p class="text-center opacity-40 py-10">موردی یافت نشد...</p>';
         return;
     }
-    container.innerHTML = dataArray.map(p => `
+    container.innerHTML = dataArray.map(p => {
+        // ✅ اصلاح هماهنگ با سرستون‌های شیت شما
+        const categoryVal = p.category || "بدون دسته"; 
+        const hashtagsVal = p.hashtags || "";         
+        
+        const tagsHtml = hashtagsVal ? hashtagsVal.split(',').map(t => `
+            <span class="sub-tag" onclick="event.stopPropagation(); filterByHashtag('${t.trim()}')">#${t.trim()}</span>
+        `).join('') : '';
+
+        return `
         <article class="glass-card">
             <div class="flex justify-between items-center mb-5">
-                <span class="tag">${p.tag}</span>
+                <span class="tag">${categoryVal}</span>
                 <span class="date-text opacity-30 font-bold">${p.date || ''}</span>
             </div>
-            <p class="text-2xl leading-[1.8] font-medium opacity-90 mb-8">${p.content}</p>
-            <div class="flex justify-end pt-5 border-t border-black/5 dark:border-white/5">
+            <p class="post-content font-medium opacity-90 mb-8">${p.content}</p>
+            <div class="flex justify-between items-center pt-5 border-t border-black/5 dark:border-white/5">
+                <div class="sub-tags-container">
+                    ${tagsHtml}
+                </div>
                 <button onclick="share(event, '${p.content.replace(/'/g, "\\'")}')" class="text-[var(--main-accent)] opacity-40 hover:opacity-100 transition-all p-1">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                 </button>
             </div>
         </article>
-    `).join('');
+    `}).join('');
+}
+
+// ✅ فیلتر کردن بر اساس هشتگ (ستون hashtags)
+function filterByHashtag(tagName) {
+    const filtered = posts.filter(p => (p.hashtags || "").includes(tagName));
+    renderPosts(filtered);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // -------------------- FILTER --------------------
 function searchPosts() {
     const term = document.getElementById('searchInput').value.toLowerCase();
-    const baseList = currentFilter === 'همه' ? posts : posts.filter(p => p.tag === currentFilter);
+    const baseList = currentFilter === 'همه' ? posts : posts.filter(p => p.category === currentFilter);
     const filtered = baseList.filter(p => 
         p.content.toLowerCase().includes(term) || 
-        (p.tag && p.tag.toLowerCase().includes(term)) ||
+        (p.category && p.category.toLowerCase().includes(term)) ||
+        (p.hashtags && p.hashtags.toLowerCase().includes(term)) ||
         (p.date && p.date.toString().includes(term))
     );
     renderPosts(filtered);
@@ -66,7 +98,7 @@ function filterCat(btn, tag) {
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('searchInput').value = '';
-    const filtered = tag === 'همه' ? posts : posts.filter(p => p.tag === tag);
+    const filtered = tag === 'همه' ? posts : posts.filter(p => p.category === tag);
     renderPosts(filtered);
     closePanels();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -75,7 +107,6 @@ function filterCat(btn, tag) {
 // -------------------- SCROLL LOCK --------------------
 function lockScroll() {
     scrollY = window.scrollY;
-
     document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollY}px`;
     document.body.style.width = '100%';
@@ -85,7 +116,6 @@ function unlockScroll() {
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.width = '';
-
     window.scrollTo(0, scrollY);
 }
 
@@ -96,7 +126,6 @@ function handleNav(action) {
         toggleDark();
         return;
     }
-
     const targetPanel = action === 'categories' ? 'category-panel' : (action === 'colors' ? 'color-panel' : null);
     const isAlreadyOpen = targetPanel ? document.getElementById(targetPanel).classList.contains('show') : false;
 
@@ -128,9 +157,7 @@ function handleNav(action) {
 function closePanels() {
     document.querySelectorAll('.panel-popup').forEach(p => p.classList.remove('show'));
     unlockScroll();
-
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-
     if (currentFilter !== 'همه') {
         document.getElementById('nav-cats').classList.add('active');
     } else {
@@ -164,7 +191,7 @@ function setTheme(bg, accent, text) {
     closePanels();
 }
 
-// -------------------- ✅ FIXED SHARE ONLY --------------------
+// -------------------- SHARE --------------------
 async function share(event, text) {
     const shareMessage = `${text}
     
@@ -178,7 +205,6 @@ async function share(event, text) {
 ســــایت: fa.fanos.workers.dev`;
 
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
     if (navigator.share && isMobile) {
         try {
             await navigator.share({
@@ -187,18 +213,14 @@ async function share(event, text) {
             });
             showFeedback(event);
             return;
-        } catch (err) {
-            // اگر share fail شد → میره کپی
-        }
+        } catch (err) {}
     }
-
-    // fallback
     try {
         await navigator.clipboard.writeText(shareMessage);
     } catch (err) {}
-
     showFeedback(event);
 }
+
 // -------------------- FEEDBACK --------------------
 function showFeedback(event) {
     const feedback = document.createElement('div');
@@ -210,7 +232,7 @@ function showFeedback(event) {
     setTimeout(() => feedback.remove(), 1000);
 }
 
-// -------------------- ✅ ONLY FIX (NO OTHER CHANGE) --------------------
+// -------------------- CLICK LISTENER --------------------
 window.addEventListener('click', function(e) {
     const aboutOverlay = document.getElementById('about-overlay');
     const panels = document.querySelectorAll('.panel-popup');
@@ -226,10 +248,10 @@ window.addEventListener('click', function(e) {
     });
 
     const clickedNav = e.target.closest('.nav-item');
-
+    const clickedFontBtn = e.target.closest('.font-ctrl-anchor');
     const anyPanelOpen = document.querySelector('.panel-popup.show');
 
-    if (anyPanelOpen && !clickedInsidePanel && !clickedNav) {
+    if (anyPanelOpen && !clickedInsidePanel && !clickedNav && !clickedFontBtn) {
         closePanels();
     }
 });
