@@ -11,8 +11,10 @@ function rotateFontSize() {
     document.documentElement.style.setProperty('--user-font-size', sizes[fontState]);
     
     const btn = document.querySelector('.font-ctrl-anchor');
-    btn.style.transform = 'scale(1.2)';
-    setTimeout(() => btn.style.transform = 'scale(1)', 200);
+    if (btn) {
+        btn.style.transform = 'scale(1.2)';
+        setTimeout(() => btn.style.transform = 'scale(1)', 200);
+    }
 }
 
 // -------------------- POSTS --------------------
@@ -28,7 +30,6 @@ async function fetchPosts() {
     }
 }
 
-// ✅ اصلاح هماهنگ با ستون category
 function createDynamicCategories() {
     const container = document.getElementById('dynamic-cats');
     const tags = ['همه', ...new Set(posts.map(p => p.category).filter(Boolean))];
@@ -46,13 +47,18 @@ function renderPosts(dataArray) {
         return;
     }
     container.innerHTML = dataArray.map(p => {
-        // ✅ اصلاح هماهنگ با سرستون‌های شیت شما
         const categoryVal = p.category || "بدون دسته"; 
         const hashtagsVal = p.hashtags || "";         
         
         const tagsHtml = hashtagsVal ? hashtagsVal.split(',').map(t => `
             <span class="sub-tag" onclick="event.stopPropagation(); filterByHashtag('${t.trim()}')">#${t.trim()}</span>
         `).join('') : '';
+
+        // ✅ حل مشکل پاراگراف‌ها در اشتراک‌گذاری
+        const safeContent = p.content
+            .replace(/'/g, "\\'")     // خنثی کردن کوتیشن
+            .replace(/\n/g, "\\n")    // خنثی کردن خط جدید
+            .replace(/\r/g, "\\r");
 
         return `
         <article class="glass-card">
@@ -65,7 +71,7 @@ function renderPosts(dataArray) {
                 <div class="sub-tags-container">
                     ${tagsHtml}
                 </div>
-                <button onclick="share(event, '${p.content.replace(/'/g, "\\'")}')" class="text-[var(--main-accent)] opacity-40 hover:opacity-100 transition-all p-1">
+                <button onclick="share(event, '${safeContent}')" class="text-[var(--main-accent)] opacity-40 hover:opacity-100 transition-all p-1">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                 </button>
             </div>
@@ -73,7 +79,6 @@ function renderPosts(dataArray) {
     `}).join('');
 }
 
-// ✅ فیلتر کردن بر اساس هشتگ (ستون hashtags)
 function filterByHashtag(tagName) {
     const filtered = posts.filter(p => (p.hashtags || "").includes(tagName));
     renderPosts(filtered);
@@ -191,7 +196,7 @@ function setTheme(bg, accent, text) {
     closePanels();
 }
 
-// -------------------- SHARE --------------------
+// ✅ اصلاح نمایش کپی در PC و موبایل
 async function share(event, text) {
     const shareMessage = `${text}
     
@@ -204,6 +209,11 @@ async function share(event, text) {
 تیک تاک: tiktok.com/@fanoosarea
 ســــایت: fa.fanos.workers.dev`;
 
+    // اول متن را کپی کن (برای PC حیاتی است)
+    try {
+        await navigator.clipboard.writeText(shareMessage);
+    } catch (err) {}
+
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (navigator.share && isMobile) {
         try {
@@ -211,23 +221,25 @@ async function share(event, text) {
                 title: "فانوس",
                 text: shareMessage,
             });
-            showFeedback(event);
-            return;
         } catch (err) {}
     }
-    try {
-        await navigator.clipboard.writeText(shareMessage);
-    } catch (err) {}
     showFeedback(event);
 }
 
-// -------------------- FEEDBACK --------------------
 function showFeedback(event) {
     const feedback = document.createElement('div');
     feedback.className = 'copy-feedback';
     feedback.innerText = 'متن و لینک کپی شد';
-    feedback.style.left = `${event.clientX}px`;
-    feedback.style.top = `${event.clientY - 40}px`;
+    
+    // اگر مختصات معتبر بود در محل کلیک، وگرنه وسط صفحه
+    if (event && event.clientX && event.clientY) {
+        feedback.style.left = `${event.clientX}px`;
+        feedback.style.top = `${event.clientY - 40}px`;
+    } else {
+        feedback.style.left = '50%';
+        feedback.style.top = '50%';
+    }
+    
     document.body.appendChild(feedback);
     setTimeout(() => feedback.remove(), 1000);
 }

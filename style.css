@@ -296,14 +296,13 @@ html.no-scroll {
     height: 100%;
 }
 
-/* ✅ بخش‌های جدید اضافه شده بر اساس توافق */
-
-/* ترازبندی متن پست‌ها و سایز فونت متغیر */
+/* ترازبندی متن پست‌ها و سایز فونت متغیر + حفظ پاراگراف‌ها */
 .post-content {
     text-align: justify;
     text-justify: inter-word;
     font-size: var(--user-font-size);
     line-height: 1.8;
+    white-space: pre-line; /* ✅ اصلاح برای نمایش اینترها و پاراگراف‌ها */
 }
 
 /* استایل هشتگ‌ها در پایین سمت راست کارت */
