@@ -200,31 +200,20 @@ function setTheme(bg, accent, text) {
 
 // -------------------- SHARE --------------------
 async function share(event, text) {
-    // ۱. متنی که برای کپی کردن استفاده می‌شود (با پروتکل برای فعال شدن در آیفون)
-    const copyMessage = `${text}
+    // اضافه کردن یک فاصله دقیق قبل از لینک‌ها برای شناسایی در iOS
+    const shareMessage = `${text}
     
 ✨ فـانـوس
 ---------------------------
 همراه ما باشید در:
-اینستــــا: instagram.com/fanoosarea
-تلگــــرام: t.me/fanoosarea
+اینستـــا: instagram.com/fanoosarea
+تلگـــرام: t.me/fanoosarea
 تیک تاک: tiktok.com/@fanoosarea
-ســــایت: https://fa.fanos.workers.dev`;
-
-    // ۲. متنی که در پنل اشتراک‌گذاری سیستم (Native Share) نمایش داده می‌شود (بدون پروتکل)
-    const visualMessage = `${text}
-    
-✨ فـانـوس
----------------------------
-همراه ما باشید در:
-اینستــــا: instagram.com/fanoosarea
-تلگــــرام: t.me/fanoosarea
-تیک تاک: tiktok.com/@fanoosarea
-ســــایت: fa.fanos.workers.dev`;
+ســـایت: fa.fanos.workers.com`;
 
     try {
-        // اول متن کامل را کپی می‌کنیم که اگر کاربر جایی Paste کرد، لینک‌ها کار کنند
-        await navigator.clipboard.writeText(copyMessage);
+        // متنی که کپی می‌شود
+        await navigator.clipboard.writeText(shareMessage);
     } catch (err) {
         console.error("خطا در کپی");
     }
@@ -232,9 +221,10 @@ async function share(event, text) {
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (navigator.share && isMobile) {
         try {
+            // در متد share، بهتر است لینک سایت را در فیلد url هم بفرستیم تا آیفون حتما آن را بشناسد
             await navigator.share({ 
                 title: "فانوس", 
-                text: copyMessage // اینجا هم از نسخه پروتکل‌دار استفاده می‌کنیم تا در واتس‌اپ آیفون قطعا آبی شود
+                text: shareMessage
             });
         } catch (err) {}
     }
