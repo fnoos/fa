@@ -293,4 +293,8 @@ function showRandomQuote() {
 // اجرای تابع به محض لود شدن صفحه
 window.addEventListener('DOMContentLoaded', showRandomQuote);
 
-window.onload = fetchPosts;
+window.onload = () => {
+    fetchPosts();
+    // این خط باعث می‌شود از همان لحظه اول آیکون‌ها بدانند تم بنفش است
+    setTheme('#f5f3ff', '#a78bfa', '#4c1d95', 'purple');
+};
