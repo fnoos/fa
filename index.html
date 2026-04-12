@@ -26,7 +26,7 @@
     <main class="max-w-xl mx-auto px-6">
         <div class="mb-8" id="search-area">
             <input type="text" id="searchInput" oninput="searchPosts()" placeholder="جستجو در کلمات، موضوعات یا تاریخ..." 
-                class="w-full p-5 rounded-[25px] bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 backdrop-blur-md outline-none focus:border-[var(--main-accent)] transition-all text-sm font-medium shadow-sm">
+                class="w-full p-5 rounded-[25px] bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 backdrop-blur-md opacity-none focus:border-[var(--main-accent)] transition-all text-sm font-medium shadow-sm">
         </div>
 
         <div id="content-area" class="space-y-8"></div>
@@ -38,11 +38,11 @@
     </div>
 
     <div id="color-panel" class="panel-popup flex justify-center gap-4">
-        <div class="dot" style="background: #a78bfa;" onclick="setTheme('#f5f3ff', '#a78bfa', '#4c1d95')"></div>
-        <div class="dot" style="background: #38bdf8;" onclick="setTheme('#f0f9ff', '#38bdf8', '#0c4a6e')"></div>
-        <div class="dot" style="background: #fb7185;" onclick="setTheme('#fff1f2', '#fb7185', '#881337')"></div>
-        <div class="dot" style="background: #10b981;" onclick="setTheme('#f0fdf4', '#10b981', '#064e3b')"></div>
-        <div class="dot" style="background: #ffb088;" onclick="setTheme('#fff1f2', '#ffb088', '#7c2d12')"></div>
+        <div class="dot" style="background: #a78bfa;" onclick="setTheme('#f5f3ff', '#a78bfa', '#4c1d95', 'purple')"></div>
+        <div class="dot" style="background: #38bdf8;" onclick="setTheme('#f0f9ff', '#38bdf8', '#0c4a6e', 'blue')"></div>
+        <div class="dot" style="background: #fb7185;" onclick="setTheme('#fff1f2', '#fb7185', '#881337', 'rose')"></div>
+        <div class="dot" style="background: #10b981;" onclick="setTheme('#f0fdf4', '#10b981', '#064e3b', 'green')"></div>
+        <div class="dot" style="background: #ffb088;" onclick="setTheme('#fff1f2', '#ffb088', '#7c2d12', 'orange')"></div>
     </div>
 
     <div id="about-overlay" onclick="closeAbout()">

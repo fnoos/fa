@@ -191,10 +191,15 @@ function toggleDark() {
     document.getElementById('theme-moon').classList.toggle('hidden', !isDark);
 }
 
-function setTheme(bg, accent, text) {
+// ✅ اصلاح شده: تابع setTheme حالا نام تم را هم دریافت کرده و به body اضافه می‌کند
+function setTheme(bg, accent, text, themeName) {
     document.documentElement.style.setProperty('--main-bg', bg);
     document.documentElement.style.setProperty('--main-accent', accent);
     document.documentElement.style.setProperty('--main-text', text);
+    
+    // اضافه کردن نام تم به بادی برای فعال شدن فیلترهای رنگی در CSS
+    document.body.setAttribute('data-theme', themeName);
+    
     closePanels();
 }
 

@@ -53,11 +53,11 @@ body.overflow-hidden {
 }
 .social-link:hover { opacity: 1; transform: scale(1.05); }
 
-/* --- ⚡ بخش اصلاح شده آیکون‌های شبکه اجتماعی (نسخه نهایی) ⚡ --- */
+/* --- ⚡ بخش اصلاح شده آیکون‌های شبکه اجتماعی (نسخه نهایی با فیلتر رنگ تم) ⚡ --- */
 
 .social-icon {
     display: inline-block;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
 }
 
@@ -65,9 +65,9 @@ body.overflow-hidden {
     width: 42px;
     height: 42px;
     display: block;
-    /* حالت لایت: تبدیل به مشکی */
+    /* حالت پیش‌فرض لایت: تبدیل به مشکی */
     filter: brightness(0);
-    transition: filter 0.3s ease, transform 0.3s ease;
+    transition: filter 0.3s ease;
 }
 
 /* حالت دارک مود: تبدیل آیکون‌ها به سفید */
@@ -75,14 +75,30 @@ body.dark .social-icon img {
     filter: brightness(0) invert(1) !important; 
 }
 
-/* حالت هاور: تبدیل به رنگ بنفش اصلی سایت */
-.social-icon:hover img {
-    filter: invert(67%) sepia(34%) saturate(735%) hue-rotate(215deg) brightness(101%) contrast(98%) !important;
-    transform: scale(1.25) rotate(8deg);
+/* انیمیشن چرخش نرم هنگام هاور */
+.social-icon:hover {
+    transform: scale(1.2) rotate(15deg);
 }
 
-.social-icon:active {
-    transform: scale(0.9);
+/* اعمال فیلتر رنگی بر اساس تم انتخابی کاربر روی بادی */
+body[data-theme="purple"] .social-icon:hover img {
+    filter: invert(68%) sepia(48%) saturate(2745%) hue-rotate(216deg) brightness(101%) contrast(98%) !important;
+}
+
+body[data-theme="blue"] .social-icon:hover img {
+    filter: invert(72%) sepia(59%) saturate(1514%) hue-rotate(174deg) brightness(101%) contrast(97%) !important;
+}
+
+body[data-theme="rose"] .social-icon:hover img {
+    filter: invert(62%) sepia(47%) saturate(3065%) hue-rotate(318deg) brightness(101%) contrast(102%) !important;
+}
+
+body[data-theme="green"] .social-icon:hover img {
+    filter: invert(56%) sepia(82%) saturate(415%) hue-rotate(113deg) brightness(96%) contrast(91%) !important;
+}
+
+body[data-theme="orange"] .social-icon:hover img {
+    filter: invert(78%) sepia(35%) saturate(913%) hue-rotate(325deg) brightness(102%) contrast(101%) !important;
 }
 
 /* --- ⚡ پایان بخش اصلاح شده ⚡ --- */
