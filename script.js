@@ -8,7 +8,7 @@ let fontState = 0;
 function rotateFontSize() {
     closePanels(); // 👈 این خط اضافه شد تا موقع تغییر سایز، بقیه پنل‌ها بسته شوند
     
-    const sizes = ['18px', '21px', '24px', '27px', '30px'];
+    const sizes = ['16px', '19px', '21px', '24px', '27px'];
     fontState = (fontState + 1) % sizes.length;
     document.documentElement.style.setProperty('--user-font-size', sizes[fontState]);
     
