@@ -1,4 +1,7 @@
-const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwk__J16xhfOD4E6nJqyM7Z2AjqQzwUCSx-iPsFt1eB0JZH6pl7J8HumA2pNggDkz1e/exec"; 
+// ⚠️ آدرس و کلید پروژه خودت را اینجا جایگزین کن
+const SUPABASE_URL = "https://gsgwyybugdolwlyaoahl.supabase.co"; 
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdzZ3d5eWJ1Z2RvbHdseWFvYWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDg5NTIsImV4cCI6MjA5MTY4NDk1Mn0.CbSvGNHbLVBOrdY2yIYdiFB4GMQf9B9mh2IkQGp_NFE"; 
+
 let posts = [];
 let currentFilter = 'همه';
 let lastScrollY = 0; 
@@ -16,11 +19,11 @@ function clearAllPopups() {
     }
 }
 
-// ✅ ۱. منطق چرخش فونت (اصلاح شده: باز کردن قفل اسکرول هنگام تغییر فونت)
+// ✅ ۱. منطق چرخش فونت
 let fontState = 0; 
 function rotateFontSize() {
     clearAllPopups(); 
-    unlockScroll(); // 👈 اینجا اضافه شد تا اگر منویی باز بود و قفل شده بود، اسکرول آزاد شود
+    unlockScroll(); 
 
     const sizes = ['16px', '19px', '21px', '24px', '27px'];
     fontState = (fontState + 1) % sizes.length;
@@ -33,16 +36,24 @@ function rotateFontSize() {
     }
 }
 
-// -------------------- POSTS --------------------
+// -------------------- POSTS (SUPABASE CONNECTED) --------------------
 async function fetchPosts() {
+    // گرفتن همه پست‌ها و مرتب‌سازی بر اساس جدیدترین (desc)
+    const apiUrl = `${SUPABASE_URL}/rest/v1/posts?select=*&order=created_at.desc`;
+
     try {
-        const res = await fetch(SHEET_API_URL);
-        const data = await res.json();
-        posts = data.reverse(); 
+        const res = await fetch(apiUrl, {
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`
+            }
+        });
+        if (!res.ok) throw new Error("Database error");
+        posts = await res.json();
         createDynamicCategories(); 
         renderPosts(posts);
     } catch (e) {
-        console.error("خطا در دریافت اطلاعات");
+        console.error("خطا در دریافت اطلاعات از Supabase", e);
     }
 }
 
@@ -65,7 +76,7 @@ function renderPosts(dataArray) {
         return;
     }
     container.innerHTML = dataArray.map(p => {
-        const categoryVal = p.category || "بدون دسته"; 
+        const categoryVal = p.category || "عمومی"; 
         const hashtagsVal = p.hashtags || "";         
         const tagsHtml = hashtagsVal ? hashtagsVal.split(',').map(t => `
             <span class="sub-tag" onclick="event.stopPropagation(); filterByHashtag('${t.trim()}')">#${t.trim()}</span>
