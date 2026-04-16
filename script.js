@@ -227,7 +227,14 @@ function setTheme(bg, accent, text, themeName) {
 
 // -------------------- SHARE --------------------
 async function share(event, text) {
-    const shareMessage = `${text}\n\n✨ فـانـوس\n---------------------------\nاینستا: instagram.com/fanoosarea\nتلگرام: t.me/fanoosarea\nسایت: https://fa.fanos.workers.dev`;
+const shareMessage = `${text}\n\n` +
+`✨ فـانـوس\n` +
+`---------------------------\n` +
+`همراه ما باشید در:\n\n` +
+`تلگــــرام: t.me/fanoosarea\n` +
+`اینستــــا: instagram.com/fanoosarea\n` +
+`تیک تاک: tiktok.com/@fanoosarea\n` +
+`ســــایت: https://fa.fanos.workers.dev`;
     try {
         await navigator.clipboard.writeText(shareMessage);
     } catch (err) {}
