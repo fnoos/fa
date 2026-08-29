@@ -112,6 +112,19 @@ export default function FanoosApp({ posts }: { posts: any[] }) {
         .post-card .interactive-icons { opacity: 0; transition: 0.3s; }
         .post-card:hover .interactive-icons, .post-card:active .interactive-icons { opacity: 1; }
         .hashtag-link { color: ${themeColor}; text-decoration: none; font-weight: 800; cursor: pointer; }
+        .post-card blockquote {
+          margin: 18px 0;
+          padding: 18px 24px;
+          border-right: 5px solid ${themeColor};
+          border-radius: 20px;
+          background: ${isDarkMode ? '#13151a' : `${themeColor}0d`};
+          box-shadow: 0 12px 28px -14px rgba(0, 0, 0, 0.35);
+          font-size: 1.02em;
+          font-weight: 500;
+          line-height: 1.8;
+          color: inherit;
+        }
+        .post-card blockquote p { margin: 0; }
         .copy-feedback { position: fixed; background: #333; color: #fff; padding: 6px 12px; border-radius: 10px; font-size: 12px; z-index: 1000; pointer-events: none; transition: 0.4s; }
         .fade-out { opacity: 0; transform: translateY(-10px); }
         .social-icon { transition: 0.3s; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; border-radius: 50%; }
