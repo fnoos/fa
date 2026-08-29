@@ -1,0 +1,27 @@
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
+@import "tailwindcss";
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  font-family: "Vazirmatn", sans-serif !important;
+  -webkit-tap-highlight-color: transparent;
+}

@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
+import FanoosApp from '../components/FanoosApp';
+import { getCollection } from 'astro:content';
+
+const faDigits = '۰۱۲۳۴۵۶۷۸۹';
+const toLatin = (s: string) =>
+  s.replace(/[۰-۹]/g, (d) => String(faDigits.indexOf(d)));
+
+const parseShamsi = (s: string): number[] =>
+  toLatin(s).split(/[/\-.\s]+/).map(Number).slice(0, 3);
+
+const dateValue = (p: number[]) => (p[0] || 0) * 10000 + (p[1] || 0) * 100 + (p[2] || 0);
+
+const categoryOf = (entry: { filePath?: string; id: string }) =>
+  entry.filePath
+    ? entry.filePath.replace(/^src\/content\/posts\//, '').split('/')[0]
+    : entry.id.split('/')[0];
+
+const posts = (await getCollection('posts'))
+  .map((entry) => ({
+    id: entry.id,
+    category: categoryOf(entry),
+    date: entry.data.date,
+    content: entry.rendered?.html ?? entry.body ?? '',
+    hashtags: entry.data.hashtags,
+    audio_url: entry.data.audio,
+  }))
+  .sort((a, b) => dateValue(parseShamsi(b.date)) - dateValue(parseShamsi(a.date)));
+---
+
+<Layout>
+  <FanoosApp posts={posts} client:only="react" />
+</Layout>
