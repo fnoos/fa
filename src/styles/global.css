@@ -1,4 +1,10 @@
-@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
+@font-face {
+  font-family: "Estedad";
+  src: url("/fonts/Estedad[wght].ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 @import "tailwindcss";
 
 @keyframes fadeIn {
@@ -22,6 +28,6 @@
 }
 
 * {
-  font-family: "Vazirmatn", sans-serif !important;
+  font-family: "Estedad", sans-serif !important;
   -webkit-tap-highlight-color: transparent;
 }

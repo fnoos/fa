@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel';
 
 export default defineConfig({
-  site: 'https://fanoosarea.vercel.app',
+  site: 'https://fnoos.vercel.app',
   integrations: [react(), sitemap()],
   adapter: vercel(),
   vite: {
